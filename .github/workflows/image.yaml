@@ -23,6 +23,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 'Check env, ${{ env.GITHUB_REF_TYPE }} ${{ env.GITHUB_REF_NAME }}'
+        run: |
+          echo ref type: ${GITHUB_REF_TYPE}
+          echo ref name: ${GITHUB_REF_NAME}
+
       - name: 'Push image, latest'
         if: ${{ env.GITHUB_REF_TYPE != 'tag' }}
         run: |
@@ -32,5 +37,5 @@ jobs:
       - name: 'Push image, ${{ env.GITHUB_REF_NAME }}'
         if: ${{ env.GITHUB_REF_TYPE == 'tag' }}
         run: |
-          docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${{ env.GITHUB_REF_NAME }}
-          docker push ghcr.io/googollee/hello-k8s-helm-flux:${{ env.GITHUB_REF_NAME }}
+          docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${GITHUB_REF_NAME}
+          docker push ghcr.io/googollee/hello-k8s-helm-flux:${GITHUB_REF_NAME}
