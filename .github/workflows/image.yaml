@@ -12,6 +12,11 @@ jobs:
       - name: 'Checkout GitHub action'
         uses: actions/checkout@main
 
+      - name: 'Check env'
+        run: |
+          echo ref type: ${GITHUB_REF_TYPE}
+          echo ref name: ${GITHUB_REF_NAME}
+
       - name: 'Build image'
         run: |
           make image
@@ -23,19 +28,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Check env, ${{ github.ref.type }} ${{ github.ref.name }}'
-        run: |
-          echo ref type: ${GITHUB_REF_TYPE}
-          echo ref name: ${GITHUB_REF_NAME}
-
       - name: 'Push image, latest'
-        if: "github.ref.type != 'tag'"
         run: |
+          if [ "${GITHUB_REF_TYPE}" == "tag" ]
+          then
+            exit 0
+          fi
           docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:latest
           docker push ghcr.io/googollee/hello-k8s-helm-flux:latest
 
-      - name: 'Push image, ${{ env.GITHUB_REF_NAME }}'
-        if: "github.ref.type == 'tag'"
+      - name: 'Push image, with tag'
         run: |
+          if [ "${GITHUB_REF_TYPE}" != "tag" ]
+          then
+            exit 0
+          fi
           docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${GITHUB_REF_NAME}
           docker push ghcr.io/googollee/hello-k8s-helm-flux:${GITHUB_REF_NAME}
