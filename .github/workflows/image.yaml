@@ -30,7 +30,7 @@ jobs:
           docker push ghcr.io/googollee/hello-k8s-helm-flux:latest
 
       - name: 'Push image, ${{ env.GITHUB_REF_NAME }}'
-        if: ${{ env.GITHUB_REF_TYPE != 'tag' }}
+        if: ${{ env.GITHUB_REF_TYPE == 'tag' }}
         run: |
           docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${{ env.GITHUB_REF_NAME }}
           docker push ghcr.io/googollee/hello-k8s-helm-flux:${{ env.GITHUB_REF_NAME }}
