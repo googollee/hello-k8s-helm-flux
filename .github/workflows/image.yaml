@@ -24,13 +24,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Push image, latest'
-        if: ${{ github.ref.type != 'tag' }}
+        if: ${{ env.GITHUB_REF_TYPE != 'tag' }}
         run: |
           docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:latest
           docker push ghcr.io/googollee/hello-k8s-helm-flux:latest
 
-      - name: 'Push image, ${{ github.ref.name }}'
-        if: ${{ github.ref.type == 'tag' }}
+      - name: 'Push image, ${{ env.GITHUB_REF_NAME }}'
+        if: ${{ env.GITHUB_REF_TYPE != 'tag' }}
         run: |
-          docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${{ github.ref.name }}
-          docker push ghcr.io/googollee/hello-k8s-helm-flux:${{ github.ref.name }}
+          docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${{ env.GITHUB_REF_NAME }}
+          docker push ghcr.io/googollee/hello-k8s-helm-flux:${{ env.GITHUB_REF_NAME }}
