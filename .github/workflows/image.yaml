@@ -14,8 +14,8 @@ jobs:
 
       - name: 'Check env'
         run: |
-          echo ref type: ${GITHUB_REF_TYPE}
-          echo ref name: ${GITHUB_REF_NAME}
+          echo ref type: ${GITHUB_REF_TYPE}, ${{ env.github.ref_type }}
+          echo ref name: ${GITHUB_REF_NAME}, ${{ env.github.ref_name }}
 
       - name: 'Build image'
         run: |
