@@ -14,8 +14,8 @@ jobs:
 
       - name: 'Check env'
         run: |
-          echo ref type: ${GITHUB_REF_TYPE}, ${{ github.ref_type }}
-          echo ref name: ${GITHUB_REF_NAME}, ${{ github.ref_name }}
+          echo ref type: ${{ github.ref_type }}
+          echo ref name: ${{ github.ref_name }}
 
       - name: 'Build image'
         run: |
@@ -29,21 +29,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Push image, latest'
+        if: github.ref_type == 'branch' && github.ref_name == 'main'
         run: |
-          if [ "${GITHUB_REF_TYPE}" == "tag" ]
-          then
-            echo "not latest"
-            exit 0
-          fi
           docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:latest
           docker push ghcr.io/googollee/hello-k8s-helm-flux:latest
 
       - name: 'Push image, with tag'
+        if: github.ref_type == 'tag'
         run: |
-          if [ "${GITHUB_REF_TYPE}" != "tag" ]
-          then
-            echo "not tag"
-            exit 0
-          fi
-          docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${GITHUB_REF_NAME}
-          docker push ghcr.io/googollee/hello-k8s-helm-flux:${GITHUB_REF_NAME}
+          docker tag hello ghcr.io/googollee/hello-k8s-helm-flux:${{ github.ref_name }}
+          docker push ghcr.io/googollee/hello-k8s-helm-flux:${{ github.ref_name }}
