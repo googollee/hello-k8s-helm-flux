@@ -19,7 +19,7 @@ jobs:
 
       - name: 'Build image'
         run: |
-          make image
+          ./make/image.sh
 
       - name: 'Login to GHCR'
         uses: docker/login-action@v3
