@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "hello.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "hello.selectorLabels" . | nindent 6 }}
@@ -27,7 +25,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "hello.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -36,6 +33,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/hello", "-c", "/config/config.json"]
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -46,12 +44,18 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
+        - name: config
+          configMap:
+            name: {{  include "hello.fullname" . }}
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

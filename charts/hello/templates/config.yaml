@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hello.fullname" . }}
+  labels:
+    {{- include "hello.labels" . | nindent 4 }}
+data:
+  config.json: |
+    {"addr":":{{ .Values.service.port }}","echo_name":"{{ .Values.echo_name }}"}
